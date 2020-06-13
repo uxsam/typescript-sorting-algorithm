@@ -2,45 +2,70 @@ type inputType = string[] | number[];
 
 
 class MergeSort {
-    private _sortedArray: inputType =[];
+    private _sortedArray: inputType = [];
+    private opertionsCounter = 0;
     get sortedArray(): inputType{
         return this._sortedArray;
     }
     
-    constructor(arraySort: inputType ) {
-       this._sortedArray = this.functionMergsort(arraySort);
+    constructor(unSortedArray: inputType ) {
+        this._sortedArray = this.functionMergesort(unSortedArray);
+        console.log(this.opertionsCounter++);
     }
 
     private merge(left:inputType , right:inputType): inputType {
         if (left.length < 0 && right.length < 0) { 
             return [];
         }
-        let mainarray = ([...left,...right] as inputType);
-        mainarray.sort((a: string|number , b : string|number) => {
-            if (a > b) {
-                return 1
+        let mainarray :(string|number) =[];
+        let rightStartCounter = 0;
+        for (let i=0; i < left.length; i++) {
+            for (let j = rightStartCounter; j < right.length; j++){
+
+                //[1, 2, 6, 4,2,4,  66,78,0,44,22,42,12];
+                if (left[i] <  right[j]) {
+                    mainarray.push(left[i]);
+                    //end of array
+                    if (i === left.length-1  ) {
+                        mainarray.push(...right.slice(j,right.length));
+                    }
+                    break;
+                } else if (left[i] >  right[j]) { 
+                    mainarray.push(right[j]);
+                    rightStartCounter++;
+                    
+                     if(j === right.length - 1){
+                         mainarray.push(...left.slice(i, left.length));
+                    }
+                    
+                }
+                else if (left[i] === right[j]) { 
+                    mainarray.push(left[i]);
+                    mainarray.push(right[j]);
+                    rightStartCounter++;
+                    break;
+                }
             }
-            if (a < b) {
-                return -1;
-            }
-            return 0;
-        });
+            
+        }
         return mainarray;
     }
 
-    private functionMergsort (arrayToSplit:inputType): inputType  {
-        let arraySize = arrayToSplit.length;
+    private functionMergesort(unSortedArray: inputType): inputType  {
+        this.opertionsCounter++;
+        let arraySize = unSortedArray.length;
         if (arraySize < 2 ) {
-            return arrayToSplit;
+            return unSortedArray;
         }
-        let splitSize = Math.round(arraySize / 2);
+        let splitSize = Math.floor(arraySize / 2);
          //split the main array to left and right
-        let left = arrayToSplit.slice(0, splitSize);
-        let right = arrayToSplit.slice(splitSize, arraySize);
-        return this.merge(left,right);
+        let left = unSortedArray.slice(0, splitSize);
+        let right = unSortedArray.slice(splitSize, arraySize);
+        
+        return this.merge(this.functionMergesort(left),this.functionMergesort(right));
     }
 }
-let input: inputType = ['janet j','janet a','sam m', 'jeena m', 'luis b','raman v'];
-console.log(new MergeSort(input).sortedArray);
-input = [1, 2, 6, 4,2,4,66,78,0,44,22,42,12];
+
+let input = [1, 2, 6, -1, 0, 77, 64, 4, 4];
+
 console.log(new MergeSort(input).sortedArray);
